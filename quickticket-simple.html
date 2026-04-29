@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuickTicket</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      color: #333;
+    }
+
+    /* --- NAVBAR --- */
+    .navbar {
+      background: #1a73e8;
+      color: white;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar h1 { font-size: 22px; }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      margin-left: 16px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* --- PAGE SYSTEM --- */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* --- HERO BANNER --- */
+    .hero {
+      background: linear-gradient(135deg, #1a73e8, #0d47a1);
+      color: white;
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+    .hero h2 { font-size: 30px; margin-bottom: 10px; }
+    .hero p  { font-size: 16px; margin-bottom: 20px; opacity: 0.85; }
+
+    .hero button {
+      background: white;
+      color: #1a73e8;
+      border: none;
+      padding: 12px 28px;
+      font-size: 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* --- OFFER BAR --- */
+    .offer-bar {
+      background: #ff6f00;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    /* --- SECTION TITLE --- */
+    .section-title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      margin: 30px 0 20px;
+      color: #1a73e8;
+    }
+
+    /* --- CARD GRID --- */
+    .card-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 0 20px 40px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      width: 260px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .card-top {
+      padding: 30px 10px 16px;
+      font-size: 56px;
+    }
+
+    .card h3 { font-size: 18px; margin-bottom: 6px; }
+    .card p  { font-size: 13px; color: #777; padding: 0 16px; margin-bottom: 10px; }
+
+    .card .price {
+      font-size: 16px;
+      font-weight: bold;
+      color: #1a73e8;
+      margin-bottom: 14px;
+    }
+
+    .card button {
+      margin-bottom: 18px;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .card button:hover { background: #1558b0; }
+
+    .card button.disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #ff6f00;
+      color: white;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+    }
+
+    /* --- LOGIN FORM --- */
+    .login-box {
+      background: white;
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+
+    .login-box h2 { text-align: center; margin-bottom: 20px; color: #1a73e8; }
+
+    .login-box label {
+      font-size: 13px;
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+
+    .login-box input:focus {
+      border-color: #1a73e8;
+      outline: none;
+    }
+
+    .otp-row { display: flex; gap: 10px; margin-bottom: 14px; }
+    .otp-row input { flex: 1; margin-bottom: 0; }
+
+    .otp-row button {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .hint { background: #e8f5e9; color: #2e7d32; padding: 10px; border-radius: 6px; font-size: 13px; margin-bottom: 12px; display: none; }
+    .error { background: #ffebee; color: #c62828; padding: 10px; border-radius: 6px; font-size: 13px; margin-bottom: 12px; display: none; }
+
+    .login-box .submit-btn {
+      width: 100%;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* --- BOOKING FORM --- */
+    .booking-box {
+      background: white;
+      max-width: 500px;
+      margin: 30px auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+
+    .booking-box h2 { color: #1a73e8; margin-bottom: 20px; font-size: 20px; }
+
+    .booking-box label {
+      font-size: 13px;
+      font-weight: bold;
+      color: #555;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .booking-box input,
+    .booking-box select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 14px;
+      background: white;
+    }
+
+    .booking-box input:focus,
+    .booking-box select:focus {
+      border-color: #1a73e8;
+      outline: none;
+    }
+
+    .price-summary {
+      background: #e3f2fd;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 10px 0 18px;
+    }
+
+    .price-summary p { font-size: 14px; margin-bottom: 6px; color: #444; }
+    .price-summary .total { font-size: 18px; font-weight: bold; color: #1a73e8; margin-top: 8px; }
+
+    .booking-box button {
+      width: 100%;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: #1a73e8;
+      font-size: 14px;
+      cursor: pointer;
+      margin: 20px 0 0 20px;
+      display: block;
+    }
+
+    /* --- SEAT GRID --- */
+    .seat-area { text-align: center; margin-bottom: 16px; }
+    .seat-area p { font-size: 13px; color: #888; margin-bottom: 10px; }
+
+    .screen {
+      background: #1a73e8;
+      color: white;
+      font-size: 12px;
+      padding: 6px;
+      border-radius: 4px;
+      width: 70%;
+      margin: 0 auto 16px;
+      text-align: center;
+    }
+
+    .seat-row { display: flex; justify-content: center; gap: 6px; margin-bottom: 6px; }
+
+    .seat {
+      width: 32px;
+      height: 28px;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      background: #f9f9f9;
+      font-size: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #aaa;
+    }
+
+    .seat:hover  { border-color: #1a73e8; color: #1a73e8; }
+    .seat.picked { background: #1a73e8; color: white; border-color: #1a73e8; }
+    .seat.taken  { background: #eee; cursor: not-allowed; opacity: 0.5; }
+
+    .legend { display: flex; justify-content: center; gap: 18px; margin: 12px 0; font-size: 12px; color: #888; }
+    .legend span { display: flex; align-items: center; gap: 5px; }
+    .dot { width: 14px; height: 14px; border-radius: 3px; border: 2px solid #ccc; }
+    .dot.blue  { background: #1a73e8; border-color: #1a73e8; }
+    .dot.grey  { background: #eee; }
+
+    /* --- PROFILE & HISTORY --- */
+    .info-box {
+      background: white;
+      max-width: 480px;
+      margin: 30px auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .info-box .top-bar {
+      background: #1a73e8;
+      color: white;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .info-box .top-bar .avatar {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      font-size: 24px; font-weight: bold;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 10px;
+      color: white;
+    }
+
+    .info-box .top-bar h2 { font-size: 20px; }
+    .info-box .top-bar p  { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 14px;
+    }
+
+    .info-row span:first-child { color: #888; }
+    .info-row span:last-child  { font-weight: bold; }
+
+    .booking-item {
+      background: white;
+      max-width: 500px;
+      margin: 0 auto 12px;
+      padding: 16px 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .booking-item .icon { font-size: 28px; }
+    .booking-item .info { flex: 1; }
+    .booking-item .info strong { display: block; font-size: 15px; margin-bottom: 3px; }
+    .booking-item .info small  { color: #888; font-size: 12px; }
+    .booking-item .amount { font-size: 16px; font-weight: bold; color: #1a73e8; }
+
+    .history-wrap { padding: 10px 20px 40px; }
+
+    .empty-msg { text-align: center; padding: 40px; color: #aaa; font-size: 15px; }
+
+    /* --- MODAL --- */
+    .modal-bg {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999;
+      display: none;
+    }
+
+    .modal-bg.show { display: flex; }
+
+    .modal {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+
+    .modal .tick { font-size: 50px; margin-bottom: 10px; }
+    .modal h3 { font-size: 20px; margin-bottom: 6px; color: #1a73e8; }
+    .modal p  { font-size: 13px; color: #777; margin-bottom: 16px; }
+
+    .modal .details {
+      background: #f5f5f5;
+      border-radius: 8px;
+      padding: 14px;
+      text-align: left;
+      margin-bottom: 18px;
+      font-size: 13px;
+    }
+
+    .modal .details p { margin-bottom: 6px; color: #555; }
+
+    .modal button {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 11px 28px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* --- TOAST --- */
+    .toast {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      background: #333;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 9999;
+    }
+
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<!-- ===== WELCOME PAGE ===== -->
+<div id="welcome-page" class="page active">
+
+  <div class="navbar">
+    <h1>🎫 QuickTicket</h1>
+    <div>
+      <a onclick="showPage('welcome')">Home</a>
+      <a onclick="showPage('login')">Login</a>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h2>Book Your Tickets Instantly</h2>
+    <p>Bus · Movie · Train — all in one place</p>
+    <button onclick="showPage('login')">Get Started</button>
+  </div>
+
+  <div class="offer-bar">
+    🎁 Bus 10% OFF &nbsp;|&nbsp; 🍿 Movie — Free Popcorn on 2+ seats &nbsp;|&nbsp; 🚂 Train 5% off on weekends
+  </div>
+
+  <p class="section-title">Our Services</p>
+
+  <div class="card-grid">
+
+    <div class="card">
+      <div class="card-top">🚌</div>
+      <span class="badge">10% OFF</span>
+      <h3>Bus Booking</h3>
+      <p>Travel between cities with ease</p>
+      <div class="price">From ₹250 / seat</div>
+      <button onclick="showPage('login')">Book Now</button>
+    </div>
+
+    <div class="card">
+      <div class="card-top">🎬</div>
+      <span class="badge">Free 🍿</span>
+      <h3>Movie Booking</h3>
+      <p>Pick your seats for latest movies</p>
+      <div class="price">₹200 / seat</div>
+      <button onclick="showPage('login')">Book Now</button>
+    </div>
+
+    <div class="card">
+      <div class="card-top">🚂</div>
+      <span class="badge">5% Weekend</span>
+      <h3>Train Booking</h3>
+      <p>All classes — General to 1st AC</p>
+      <div class="price">From ₹150 / person</div>
+      <button onclick="showPage('login')">Book Now</button>
+    </div>
+
+    <div class="card">
+      <div class="card-top" style="opacity:0.4;">✈️</div>
+      <span class="badge" style="background:#999;">Coming Soon</span>
+      <h3 style="color:#aaa;">Airway Booking</h3>
+      <p>Flights will be available soon</p>
+      <div class="price" style="color:#aaa;">Stay Tuned</div>
+      <button class="disabled">Coming Soon</button>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="login-page" class="page">
+
+  <div class="navbar">
+    <h1>🎫 QuickTicket</h1>
+    <div><a onclick="showPage('welcome')">← Back</a></div>
+  </div>
+
+  <div class="login-box">
+    <h2>Login to Continue</h2>
+
+    <label>Your Name</label>
+    <input type="text" id="name" placeholder="Enter your name">
+
+    <label>Phone Number</label>
+    <input type="tel" id="phone" placeholder="10-digit number" maxlength="10">
+
+    <label>OTP</label>
+    <div class="otp-row">
+      <input type="text" id="otp" placeholder="Enter OTP" maxlength="6">
+      <button onclick="sendOTP()">Send OTP</button>
+    </div>
+
+    <div class="hint" id="otp-hint"></div>
+    <div class="error" id="login-err"></div>
+
+    <button class="submit-btn" onclick="doLogin()">Verify & Login</button>
+  </div>
+
+</div>
+
+
+<!-- ===== DASHBOARD PAGE ===== -->
+<div id="dashboard-page" class="page">
+
+  <div class="navbar">
+    <h1>🎫 QuickTicket</h1>
+    <div>
+      <a onclick="showPage('profile')">Profile</a>
+      <a onclick="showPage('history')">History</a>
+      <a onclick="doLogout()">Logout</a>
+    </div>
+  </div>
+
+  <div class="hero" style="padding: 30px 20px;">
+    <h2 id="greeting">Hello! 👋</h2>
+    <p>What would you like to book today?</p>
+  </div>
+
+  <p class="section-title">Choose a Service</p>
+
+  <div class="card-grid">
+
+    <div class="card" onclick="showPage('bus-page')" style="cursor:pointer;">
+      <div class="card-top">🚌</div>
+      <span class="badge">10% OFF</span>
+      <h3>Bus Booking</h3>
+      <p>Intercity bus routes</p>
+      <div class="price">From ₹250 / seat</div>
+      <button>Book Now</button>
+    </div>
+
+    <div class="card" onclick="showPage('movie-page')" style="cursor:pointer;">
+      <div class="card-top">🎬</div>
+      <span class="badge">Free 🍿</span>
+      <h3>Movie Booking</h3>
+      <p>Select seats for movies</p>
+      <div class="price">₹200 / seat</div>
+      <button>Book Now</button>
+    </div>
+
+    <div class="card" onclick="showPage('train-page')" style="cursor:pointer;">
+      <div class="card-top">🚂</div>
+      <span class="badge">5% Weekend</span>
+      <h3>Train Booking</h3>
+      <p>All travel classes</p>
+      <div class="price">From ₹150 / person</div>
+      <button>Book Now</button>
+    </div>
+
+    <div class="card">
+      <div class="card-top" style="opacity:0.4;">✈️</div>
+      <span class="badge" style="background:#999;">Coming Soon</span>
+      <h3 style="color:#aaa;">Airway Booking</h3>
+      <p>Flights launching soon</p>
+      <div class="price" style="color:#aaa;">Stay Tuned</div>
+      <button class="disabled">Coming Soon</button>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ===== BUS BOOKING ===== -->
+<div id="bus-page" class="page">
+
+  <div class="navbar">
+    <h1>🎫 QuickTicket</h1>
+    <div><a onclick="showPage('dashboard')">← Back</a></div>
+  </div>
+
+  <div class="booking-box">
+    <h2>🚌 Bus Booking</h2>
+
+    <label>From</label>
+    <select id="bus-from">
+      <option value="">Select city</option>
+      <option>Hyderabad</option><option>Bangalore</option><option>Chennai</option>
+      <option>Mumbai</option><option>Delhi</option><option>Pune</option>
+    </select>
+
+    <label>To</label>
+    <select id="bus-to">
+      <option value="">Select city</option>
+      <option>Hyderabad</option><option>Bangalore</option><option>Chennai</option>
+      <option>Mumbai</option><option>Delhi</option><option>Pune</option>
+    </select>
+
+    <label>Travel Date</label>
+    <input type="date" id="bus-date">
+
+    <label>Bus Type</label>
+    <select id="bus-type" onchange="calcBus()">
+      <option value="250">Ordinary — ₹250/seat</option>
+      <option value="400">AC Seater — ₹400/seat</option>
+      <option value="600">Volvo Sleeper — ₹600/seat</option>
+      <option value="750">Luxury AC — ₹750/seat</option>
+    </select>
+
+    <label>Number of Seats</label>
+    <input type="number" id="bus-seats" value="1" min="1" max="6" oninput="calcBus()">
+
+    <label>Passenger Name</label>
+    <input type="text" id="bus-name" placeholder="Your name">
+
+    <div class="price-summary">
+      <p>Base Fare: <span id="b-fare">₹250 × 1</span></p>
+      <p>Discount (10%): <span id="b-disc" style="color:green;">-₹25</span></p>
+      <p>Convenience Fee: ₹30</p>
+      <p class="total">Total: <span id="b-total">₹255</span></p>
+    </div>
+
+    <button onclick="bookBus()">Confirm Booking</button>
+  </div>
+
+</div>
+
+
+<!-- ===== MOVIE BOOKING ===== -->
+<div id="movie-page" class="page">
+
+  <div class="navbar">
+    <h1>🎫 QuickTicket</h1>
+    <div><a onclick="showPage('dashboard')">← Back</a></div>
+  </div>
+
+  <div class="booking-box">
+    <h2>🎬 Movie Booking</h2>
+
+    <label>Movie</label>
+    <select id="movie-name">
+      <option>Kalki 2898 AD</option>
+      <option>Pushpa 2</option>
+      <option>RRR Re-Release</option>
+      <option>Devara Part 1</option>
+    </select>
+
+    <label>Theatre</label>
+    <select id="movie-theatre">
+      <option>PVR INOX – Banjara Hills</option>
+      <option>Cinepolis – Himayatnagar</option>
+      <option>AMB Cinemas – Gachibowli</option>
+    </select>
+
+    <label>Date</label>
+    <input type="date" id="movie-date">
+
+    <label>Show Time</label>
+    <select id="movie-time">
+      <option>10:30 AM</option><option>1:45 PM</option>
+      <option>4:30 PM</option><option>7:00 PM</option>
+    </select>
+
+    <div class="seat-area">
+      <div class="screen">SCREEN</div>
+      <div id="seat-grid"></div>
+      <div class="legend">
+        <span><div class="dot blue"></div> Selected</span>
+        <span><div class="dot"></div> Available</span>
+        <span><div class="dot grey"></div> Taken</span>
+      </div>
+    </div>
+
+    <div class="price-summary">
+      <p>Selected Seats: <span id="m-seats">None</span></p>
+      <p>Cost: <span id="m-cost">₹0</span></p>
+      <p id="m-pop" style="color:green; display:none;">🍿 Free Popcorn on 2+ seats!</p>
+      <p class="total">Total: <span id="m-total">₹0</span></p>
+    </div>
+
+    <button onclick="bookMovie()">Confirm Booking</button>
+  </div>
+
+</div>
+
+
+<!-- ===== TRAIN BOOKING ===== -->
+<div id="train-page" class="page">
+
+  <div class="navbar">
+    <h1>🎫 QuickTicket</h1>
+    <div><a onclick="showPage('dashboard')">← Back</a></div>
+  </div>
+
+  <div class="booking-box">
+    <h2>🚂 Train Booking</h2>
+
+    <label>From Station</label>
+    <select id="train-from">
+      <option value="">Select station</option>
+      <option>Hyderabad (HYB)</option><option>Secunderabad (SC)</option>
+      <option>Bangalore (SBC)</option><option>Chennai (MAS)</option>
+      <option>Mumbai (CSTM)</option><option>Delhi (NDLS)</option>
+    </select>
+
+    <label>To Station</label>
+    <select id="train-to">
+      <option value="">Select station</option>
+      <option>Hyderabad (HYB)</option><option>Secunderabad (SC)</option>
+      <option>Bangalore (SBC)</option><option>Chennai (MAS)</option>
+      <option>Mumbai (CSTM)</option><option>Delhi (NDLS)</option>
+    </select>
+
+    <label>Date</label>
+    <input type="date" id="train-date" onchange="calcTrain()">
+
+    <label>Class</label>
+    <select id="train-class" onchange="calcTrain()">
+      <option value="150">General — ₹150/person</option>
+      <option value="350">Sleeper — ₹350/person</option>
+      <option value="600">3rd AC — ₹600/person</option>
+      <option value="900">2nd AC — ₹900/person</option>
+      <option value="1500">1st AC — ₹1500/person</option>
+    </select>
+
+    <label>Passengers</label>
+    <input type="number" id="train-pax" value="1" min="1" max="6" oninput="calcTrain()">
+
+    <label>Passenger Name</label>
+    <input type="text" id="train-name" placeholder="Your name">
+
+    <div class="price-summary">
+      <p>Base Fare: <span id="t-fare">₹150 × 1</span></p>
+      <p id="t-disc-row">Weekend Discount: <span id="t-disc" style="color:green;">₹0</span></p>
+      <p>Service Charge: ₹40</p>
+      <p class="total">Total: <span id="t-total">₹190</span></p>
+    </div>
+
+    <button onclick="bookTrain()">Confirm Booking</button>
+  </div>
+
+</div>
+
+
+<!-- ===== PROFILE PAGE ===== -->
+<div id="profile-page" class="page">
+
+  <div class="navbar">
+    <h1>🎫 QuickTicket</h1>
+    <div>
+      <a onclick="showPage('dashboard')">Dashboard</a>
+      <a onclick="doLogout()">Logout</a>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div class="top-bar">
+      <div class="avatar" id="p-avatar">A</div>
+      <h2 id="p-name">Name</h2>
+      <p id="p-phone">+91 XXXXXXXXXX</p>
+    </div>
+    <div class="info-row"><span>Full Name</span><span id="pi-name">—</span></div>
+    <div class="info-row"><span>Phone</span><span id="pi-phone">—</span></div>
+    <div class="info-row"><span>Account Type</span><span style="color:#1a73e8;">Free Member</span></div>
+    <div class="info-row"><span>Member Since</span><span id="pi-since">—</span></div>
+    <div class="info-row"><span>Total Bookings</span><span id="pi-count">0</span></div>
+  </div>
+
+</div>
+
+
+<!-- ===== HISTORY PAGE ===== -->
+<div id="history-page" class="page">
+
+  <div class="navbar">
+    <h1>🎫 QuickTicket</h1>
+    <div>
+      <a onclick="showPage('dashboard')">Dashboard</a>
+      <a onclick="doLogout()">Logout</a>
+    </div>
+  </div>
+
+  <div class="history-wrap">
+    <p class="section-title">My Bookings</p>
+    <div id="hist-list"></div>
+  </div>
+
+</div>
+
+
+<!-- ===== BOOKING SUCCESS MODAL ===== -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="tick">✅</div>
+    <h3>Booking Confirmed!</h3>
+    <p id="modal-msg">Your ticket is booked.</p>
+    <div class="details" id="modal-details"></div>
+    <button onclick="closeModal()">Go to Dashboard</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+
+  // ---- Page Navigation ----
+  function showPage(id) {
+    var user = getUser();
+    var safe = ['welcome', 'login'];
+    if (!safe.includes(id) && !user) {
+      showToast("Please login first!");
+      id = 'login';
+    }
+    document.querySelectorAll('.page').forEach(function(p) {
+      p.classList.remove('active');
+    });
+    document.getElementById(id + '-page') && document.getElementById(id + '-page').classList.add('active');
+    window.scrollTo(0, 0);
+
+    if (id === 'dashboard') loadDashboard();
+    if (id === 'profile')   loadProfile();
+    if (id === 'history')   loadHistory();
+    if (id === 'movie')     buildSeatGrid();
+    if (id === 'bus')       calcBus();
+    if (id === 'train')     calcTrain();
+  }
+
+  // ---- LocalStorage ----
+  function getUser() {
+    try { return JSON.parse(localStorage.getItem('user')); } catch(e) { return null; }
+  }
+
+  function getBookings() {
+    try { return JSON.parse(localStorage.getItem('bookings')) || []; } catch(e) { return []; }
+  }
+
+  function addBooking(b) {
+    var list = getBookings();
+    list.unshift(b);
+    localStorage.setItem('bookings', JSON.stringify(list));
+  }
+
+  // ---- OTP Login ----
+  var myOTP = null;
+
+  function sendOTP() {
+    var name  = document.getElementById('name').value.trim();
+    var phone = document.getElementById('phone').value.trim();
+    var err   = document.getElementById('login-err');
+    err.style.display = 'none';
+
+    if (!name)  { showErr(err, 'Please enter your name.'); return; }
+    if (phone.length !== 10 || isNaN(phone)) { showErr(err, 'Enter a valid 10-digit number.'); return; }
+
+    myOTP = String(Math.floor(100000 + Math.random() * 900000));
+    var hint = document.getElementById('otp-hint');
+    hint.textContent = 'Demo OTP for +91 ' + phone + ' is: ' + myOTP;
+    hint.style.display = 'block';
+    showToast('OTP sent!');
+  }
+
+  function showErr(el, msg) {
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function doLogin() {
+    var name  = document.getElementById('name').value.trim();
+    var phone = document.getElementById('phone').value.trim();
+    var otp   = document.getElementById('otp').value.trim();
+    var err   = document.getElementById('login-err');
+    err.style.display = 'none';
+
+    if (!name)  { showErr(err, 'Please enter your name.'); return; }
+    if (phone.length !== 10 || isNaN(phone)) { showErr(err, 'Enter valid 10-digit number.'); return; }
+    if (!myOTP) { showErr(err, 'Click Send OTP first.'); return; }
+    if (otp !== myOTP) { showErr(err, 'Wrong OTP. Try again.'); return; }
+
+    var today = new Date().toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
+    localStorage.setItem('user', JSON.stringify({ name: name, phone: phone, since: today }));
+    myOTP = null;
+    showToast('Welcome, ' + name + '! 🎉');
+    showPage('dashboard');
+  }
+
+  function doLogout() {
+    if (confirm('Logout?')) {
+      showPage('welcome');
+    }
+  }
+
+  // ---- Dashboard ----
+  function loadDashboard() {
+    var user = getUser();
+    if (!user) return;
+    var hour = new Date().getHours();
+    var greet = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+    document.getElementById('greeting').textContent = greet + ', ' + user.name + '! 👋';
+  }
+
+  // ---- Profile ----
+  function loadProfile() {
+    var user = getUser();
+    if (!user) return;
+    var init = user.name.charAt(0).toUpperCase();
+    document.getElementById('p-avatar').textContent = init;
+    document.getElementById('p-name').textContent   = user.name;
+    document.getElementById('p-phone').textContent  = '+91 ' + user.phone;
+    document.getElementById('pi-name').textContent  = user.name;
+    document.getElementById('pi-phone').textContent = '+91 ' + user.phone;
+    document.getElementById('pi-since').textContent = user.since;
+    document.getElementById('pi-count').textContent = getBookings().length;
+  }
+
+  // ---- History ----
+  function loadHistory() {
+    var list = getBookings();
+    var el   = document.getElementById('hist-list');
+    var icons = { bus: '🚌', movie: '🎬', train: '🚂' };
+
+    if (list.length === 0) {
+      el.innerHTML = '<p class="empty-msg">No bookings yet. Start booking! 🎟️</p>';
+      return;
+    }
+
+    el.innerHTML = list.map(function(b) {
+      return '<div class="booking-item">' +
+        '<div class="icon">' + (icons[b.type] || '🎫') + '</div>' +
+        '<div class="info"><strong>' + b.title + '</strong><small>' + b.meta + ' · ' + b.date + '</small></div>' +
+        '<div class="amount">' + b.amount + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ---- Bus Calc ----
+  function calcBus() {
+    var seats = parseInt(document.getElementById('bus-seats').value) || 1;
+    var fare  = parseInt(document.getElementById('bus-type').value)  || 250;
+    var sub   = fare * seats;
+    var disc  = Math.round(sub * 0.10);
+    var total = sub - disc + 30;
+    document.getElementById('b-fare').textContent  = '₹' + fare + ' × ' + seats;
+    document.getElementById('b-disc').textContent  = '-₹' + disc;
+    document.getElementById('b-total').textContent = '₹' + total;
+  }
+
+  function bookBus() {
+    var from  = document.getElementById('bus-from').value;
+    var to    = document.getElementById('bus-to').value;
+    var date  = document.getElementById('bus-date').value;
+    var name  = document.getElementById('bus-name').value.trim();
+    if (!from || !to || !date || !name) { showToast('Please fill all fields!'); return; }
+    if (from === to) { showToast('Source and destination same!'); return; }
+
+    var seats = parseInt(document.getElementById('bus-seats').value) || 1;
+    var fare  = parseInt(document.getElementById('bus-type').value)  || 250;
+    var type  = document.getElementById('bus-type').selectedOptions[0].text;
+    var sub   = fare * seats;
+    var disc  = Math.round(sub * 0.10);
+    var total = sub - disc + 30;
+    var ref   = 'BUS' + Date.now().toString().slice(-6);
+    var dt    = new Date(date).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+
+    addBooking({ type:'bus', title:'Bus: ' + from + ' → ' + to, meta: type + ' · ' + seats + ' seat(s)', date: dt, amount:'₹'+total, ref:ref });
+
+    document.getElementById('modal-msg').textContent = 'Your bus ticket from ' + from + ' to ' + to + ' is confirmed!';
+    document.getElementById('modal-details').innerHTML =
+      '<p><b>Ref:</b> ' + ref + '</p>' +
+      '<p><b>Route:</b> ' + from + ' → ' + to + '</p>' +
+      '<p><b>Date:</b> ' + dt + '</p>' +
+      '<p><b>Type:</b> ' + type + '</p>' +
+      '<p><b>Seats:</b> ' + seats + '</p>' +
+      '<p><b>Passenger:</b> ' + name + '</p>' +
+      '<p><b>Amount Paid:</b> ₹' + total + '</p>';
+    document.getElementById('modal').classList.add('show');
+  }
+
+  // ---- Seat Grid ----
+  var ROWS  = ['A','B','C','D','E','F'];
+  var TAKEN = ['A3','B1','B7','C5','D2','D8','E4'];
+  var picked = [];
+
+  function buildSeatGrid() {
+    picked = [];
+    var grid = document.getElementById('seat-grid');
+    grid.innerHTML = '';
+    ROWS.forEach(function(r) {
+      var row = document.createElement('div');
+      row.className = 'seat-row';
+      for (var c = 1; c <= 9; c++) {
+        var id   = r + c;
+        var seat = document.createElement('div');
+        seat.className = 'seat' + (TAKEN.includes(id) ? ' taken' : '');
+        seat.textContent = c;
+        seat.dataset.id  = id;
+        if (!TAKEN.includes(id)) {
+          seat.onclick = function() { toggleSeat(this); };
+        }
+        row.appendChild(seat);
+      }
+      grid.appendChild(row);
+    });
+    updateMoviePrice();
+  }
+
+  function toggleSeat(el) {
+    var id = el.dataset.id;
+    if (picked.includes(id)) {
+      picked = picked.filter(function(s) { return s !== id; });
+      el.classList.remove('picked');
+    } else {
+      if (picked.length >= 8) { showToast('Max 8 seats!'); return; }
+      picked.push(id);
+      el.classList.add('picked');
+    }
+    updateMoviePrice();
+  }
+
+  function updateMoviePrice() {
+    var n    = picked.length;
+    var cost = n * 200;
+    document.getElementById('m-seats').textContent = n ? picked.join(', ') : 'None';
+    document.getElementById('m-cost').textContent  = '₹200 × ' + n + ' = ₹' + cost;
+    document.getElementById('m-total').textContent = '₹' + cost;
+    document.getElementById('m-pop').style.display = n >= 2 ? 'block' : 'none';
+  }
+
+  function bookMovie() {
+    var date = document.getElementById('movie-date').value;
+    if (!date) { showToast('Please select a date!'); return; }
+    if (picked.length === 0) { showToast('Please select at least 1 seat!'); return; }
+
+    var movie   = document.getElementById('movie-name').value;
+    var theatre = document.getElementById('movie-theatre').value;
+    var time    = document.getElementById('movie-time').value;
+    var total   = picked.length * 200;
+    var ref     = 'MOV' + Date.now().toString().slice(-6);
+    var dt      = new Date(date).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+
+    addBooking({ type:'movie', title:'Movie: ' + movie, meta: theatre + ' · ' + time, date: dt, amount:'₹'+total, ref:ref });
+
+    document.getElementById('modal-msg').textContent = 'Your movie ticket is confirmed!';
+    document.getElementById('modal-details').innerHTML =
+      '<p><b>Ref:</b> ' + ref + '</p>' +
+      '<p><b>Movie:</b> ' + movie + '</p>' +
+      '<p><b>Theatre:</b> ' + theatre + '</p>' +
+      '<p><b>Date & Time:</b> ' + dt + ' · ' + time + '</p>' +
+      '<p><b>Seats:</b> ' + picked.join(', ') + '</p>' +
+      '<p><b>Amount Paid:</b> ₹' + total + '</p>' +
+      (picked.length >= 2 ? '<p style="color:green;"><b>🍿 Free Popcorn Combo!</b></p>' : '');
+    document.getElementById('modal').classList.add('show');
+    picked = [];
+  }
+
+  // ---- Train Calc ----
+  function calcTrain() {
+    var pax    = parseInt(document.getElementById('train-pax').value) || 1;
+    var fare   = parseInt(document.getElementById('train-class').value) || 150;
+    var dateEl = document.getElementById('train-date').value;
+    var isWknd = dateEl ? [0,6].includes(new Date(dateEl).getDay()) : false;
+    var sub    = fare * pax;
+    var disc   = isWknd ? Math.round(sub * 0.05) : 0;
+    var total  = sub - disc + 40;
+    document.getElementById('t-fare').textContent  = '₹' + fare + ' × ' + pax;
+    document.getElementById('t-disc').textContent  = disc > 0 ? '-₹' + disc : '₹0';
+    document.getElementById('t-total').textContent = '₹' + total;
+  }
+
+  function bookTrain() {
+    var from = document.getElementById('train-from').value;
+    var to   = document.getElementById('train-to').value;
+    var date = document.getElementById('train-date').value;
+    var name = document.getElementById('train-name').value.trim();
+    if (!from || !to || !date || !name) { showToast('Please fill all fields!'); return; }
+    if (from === to) { showToast('Source and destination same!'); return; }
+
+    var pax    = parseInt(document.getElementById('train-pax').value) || 1;
+    var fare   = parseInt(document.getElementById('train-class').value) || 150;
+    var cls    = document.getElementById('train-class').selectedOptions[0].text;
+    var isWknd = [0,6].includes(new Date(date).getDay());
+    var sub    = fare * pax;
+    var disc   = isWknd ? Math.round(sub * 0.05) : 0;
+    var total  = sub - disc + 40;
+    var ref    = 'TRN' + Date.now().toString().slice(-6);
+    var dt     = new Date(date).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+
+    addBooking({ type:'train', title:'Train: ' + from.split('(')[0] + '→ ' + to.split('(')[0], meta: cls + ' · ' + pax + ' pax', date: dt, amount:'₹'+total, ref:ref });
+
+    document.getElementById('modal-msg').textContent = 'Your train ticket is confirmed!';
+    document.getElementById('modal-details').innerHTML =
+      '<p><b>Ref:</b> ' + ref + '</p>' +
+      '<p><b>Route:</b> ' + from + ' → ' + to + '</p>' +
+      '<p><b>Date:</b> ' + dt + '</p>' +
+      '<p><b>Class:</b> ' + cls + '</p>' +
+      '<p><b>Passengers:</b> ' + pax + '</p>' +
+      '<p><b>Name:</b> ' + name + '</p>' +
+      '<p><b>Amount Paid:</b> ₹' + total + '</p>' +
+      (isWknd ? '<p style="color:green;"><b>✅ 5% Weekend Discount Applied!</b></p>' : '');
+    document.getElementById('modal').classList.add('show');
+  }
+
+  // ---- Modal ----
+  function closeModal() {
+    document.getElementById('modal').classList.remove('show');
+    showPage('dashboard');
+  }
+
+  // ---- Toast ----
+  var toastTimer;
+  function showToast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() { el.classList.remove('show'); }, 3000);
+  }
+
+  // ---- Set today's date ----
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('bus-date').value   = today;
+  document.getElementById('movie-date').value = today;
+  document.getElementById('train-date').value = today;
+
+</script>
+</body>
+</html>
